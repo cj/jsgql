@@ -27,13 +27,19 @@ const testGql = {
   type: 'query',
   name: 'test',
   method: 'testMethod',
+  methodArgs: {
+    last: 1,
+    filter: {
+      barIn: ['test'],
+      foo: {__variable__: 'foo'},
+    },
+  },
   variables: {
     id: 1,
     foo: 'bar',
-    bar: 'baz',
   },
   types: {
-    foo: 'Baz',
+    bar: 'Baz',
   },
   fields: [
     'id',
@@ -53,7 +59,7 @@ console.log(jsgql(testGql))
 
 ```graphql
 query name($id: ID!, $foo: Baz!, $bar: String!) {
-  testMethod(id: $id, foo: $foo, bar: $bar) {
+  testMethod(id: $id, foo: $foo, bar: $bar, last: 1, filter: { barIn: ["test"], foo: $foo }) {
     id
     foo {
       id

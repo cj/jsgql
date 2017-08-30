@@ -2,8 +2,10 @@ const jsgql = require('./jsgql')
 const {
   processName,
   processMethod,
+  processMethodArgs,
   processFields,
-  typeOf,
+  processType,
+  processValue,
 } = require('./jsgql')
 
 const cleanGqlString = str => {
@@ -16,6 +18,13 @@ describe('jsgql', () => {
       type: 'query',
       name: 'test',
       method: 'testMethod',
+      methodArgs: {
+        last: 1,
+        filter: {
+          barIn: ['test'],
+          foo: {__variable__: 'foo'},
+        },
+      },
       variables: {
         id: 1,
         foo: 'bar',
@@ -47,6 +56,14 @@ describe('jsgql', () => {
   test('processMethod', () => {
     expect(processMethod('')).toBe('')
     expect(processMethod({ foo: 'bar' })).toBe('(foo: $foo)')
+    expect(processMethod(null, { foo: 'bar' })).toBe('(foo: "bar")')
+  })
+
+  test('processMethodArgs', () => {
+    expect(processMethodArgs('')).toBe('')
+    expect(processMethodArgs({ foo: 'bar' })).toBe('foo: "bar"')
+    expect(processMethodArgs({ foo: { __variable__: 'bar' } })).toBe('foo: $bar')
+    expect(processMethodArgs({ foo: ['bar', 'baz'] })).toBe('foo: ["bar", "baz"]')
   })
 
   test('processFields', () => {
@@ -59,8 +76,13 @@ describe('jsgql', () => {
     ]))).toBe('id foo { bar }')
   })
 
-  test('typeOf', () => {
-    expect(typeOf('foo')).toBe('String')
-    expect(typeOf(1)).toBe('Int')
+  test('processType', () => {
+    expect(processType('foo')).toBe('String')
+    expect(processType(1)).toBe('Int')
+  })
+
+  test('processValue', () => {
+    expect(processValue('foo')).toBe('"foo"')
+    expect(processValue(1)).toBe(1)
   })
 })

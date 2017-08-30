@@ -1,5 +1,5 @@
 /**
- * jsgql v0.0.1
+ * jsgql v1.0.0
  * (c) 2017 CJ Lazell
  * @license MIT
  */
@@ -24,11 +24,15 @@ function jsgql (ref) {
   var method = ref.method;
   var fields = ref.fields;
   var types = ref.types;
+  var methodArgs = ref.methodArgs;
   var gqlStr = type + " " + name;
-  gqlStr = "" + gqlStr + (processName(variables, types)) + " {\n    " + method + (processMethod(variables)) + " {\n      " + (processFields(fields)) + "\n    }\n  }";
+  gqlStr = "" + gqlStr + (processName(variables, types)) + " {\n    " + method + (processMethod(variables, methodArgs)) + " {\n      " + (processFields(fields)) + "\n    }\n  }";
   return graphqlTag(gqlStr)
 }
-function typeOf (obj) {
+function processValue (value) {
+  return processType(value) === 'String' ? ("\"" + value + "\"") : value
+}
+function processType (obj) {
   var type = {}.toString.call(obj).split(' ')[1].slice(0, -1);
   return type === 'Number' ? 'Int' : type
 }
@@ -38,19 +42,38 @@ function processName (variables, types) {
   var variablesList = [];
   for (var name in variables) {
     var value = variables[name];
-    var type = types[name] || typeOf(value);
+    var type = types[name] || processType(value);
     if (name.includes('id') || name.includes('Id')) { type = 'ID'; }
     variablesList.push(("$" + name + ": " + type + "!"));
   }
   return ("(" + (variablesList.join(', ')) + ")")
 }
-function processMethod (variables) {
-  if (!variables) { return '' }
+function processMethod (variables, methodArgs) {
+  if (!variables) { return methodArgs ? ("(" + (processMethodArgs(methodArgs)) + ")") : '' }
   var variablesList = [];
   for (var name in variables) {
     variablesList.push((name + ": $" + name));
   }
-  return ("(" + (variablesList.join(', ')) + ")")
+  var methodString = "(" + (variablesList.join(', '));
+  if (methodArgs) { methodString += ", " + (processMethodArgs(methodArgs)); }
+  methodString += ')';
+  return methodString
+}
+function processMethodArgs (args) {
+  if (!args) { return '' }
+  var argsList = [];
+  for (var name in args) {
+    var value = args[name];
+    if (!Array.isArray(value) && typeof value === 'object' && !value.__variable__) {
+      argsList.push((name + ": { " + (processMethodArgs(value)) + " }"));
+    } else {
+      if (Array.isArray(value)) { value = "[" + (value.map(function (v) { return processValue(v); }).join(', ')) + "]"; }
+      else if (typeof value === 'object') { value = "$" + (value.__variable__); }
+      else { value = processValue(value); }
+      argsList.push((name + ": " + value));
+    }
+  }
+  return argsList.join(', ')
 }
 function processFields (fields) {
   if (!fields) { return '' }
@@ -68,22 +91,28 @@ function processFields (fields) {
 exports = module.exports = jsgql;
 exports.processName = processName;
 exports.processMethod = processMethod;
+exports.processMethodArgs = processMethodArgs;
 exports.processFields = processFields;
-exports.typeOf = typeOf;
+exports.processType = processType;
+exports.processValue = processValue;
 exports.gql = graphqlTag;
 });
 var jsgql_2 = jsgql_1.processName;
 var jsgql_3 = jsgql_1.processMethod;
-var jsgql_4 = jsgql_1.processFields;
-var jsgql_5 = jsgql_1.typeOf;
-var jsgql_6 = jsgql_1.gql;
+var jsgql_4 = jsgql_1.processMethodArgs;
+var jsgql_5 = jsgql_1.processFields;
+var jsgql_6 = jsgql_1.processType;
+var jsgql_7 = jsgql_1.processValue;
+var jsgql_8 = jsgql_1.gql;
 
 exports['default'] = jsgql_1;
 exports.processName = jsgql_2;
 exports.processMethod = jsgql_3;
-exports.processFields = jsgql_4;
-exports.typeOf = jsgql_5;
-exports.gql = jsgql_6;
+exports.processMethodArgs = jsgql_4;
+exports.processFields = jsgql_5;
+exports.processType = jsgql_6;
+exports.processValue = jsgql_7;
+exports.gql = jsgql_8;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
