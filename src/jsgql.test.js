@@ -23,6 +23,7 @@ describe('jsgql', () => {
         filter: {
           barIn: ['test'],
           foo: {__variable__: 'foo'},
+          bar: {__type__: 'BAZ'},
         },
       },
       variables: {
@@ -63,6 +64,7 @@ describe('jsgql', () => {
     expect(processMethodArgs('')).toBe('')
     expect(processMethodArgs({ foo: 'bar' })).toBe('foo: "bar"')
     expect(processMethodArgs({ foo: { __variable__: 'bar' } })).toBe('foo: $bar')
+    expect(processMethodArgs({ foo: { __type__: 'BAR' } })).toBe('foo: BAR')
     expect(processMethodArgs({ foo: ['bar', 'baz'] })).toBe('foo: ["bar", "baz"]')
   })
 

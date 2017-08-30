@@ -1,5 +1,5 @@
 /**
- * jsgql v1.0.0
+ * jsgql v1.0.1
  * (c) 2017 CJ Lazell
  * @license MIT
  */
@@ -29,8 +29,14 @@ function jsgql (ref) {
   gqlStr = "" + gqlStr + (processName(variables, types)) + " {\n    " + method + (processMethod(variables, methodArgs)) + " {\n      " + (processFields(fields)) + "\n    }\n  }";
   return graphqlTag(gqlStr)
 }
+var RESERVED_VALUES = ['__variable__', '__type__'];
+function valueReserved (value) {
+  return Object.keys(value).some(function (key) { return RESERVED_VALUES.includes(key); })
+}
 function processValue (value) {
-  return processType(value) === 'String' ? ("\"" + value + "\"") : value
+  if (value.__variable__) { return ("$" + (value.__variable__)) }
+  else if (value.__type__) { return value.__type__ }
+  else { return processType(value) === 'String' ? ("\"" + value + "\"") : value }
 }
 function processType (obj) {
   var type = {}.toString.call(obj).split(' ')[1].slice(0, -1);
@@ -64,11 +70,10 @@ function processMethodArgs (args) {
   var argsList = [];
   for (var name in args) {
     var value = args[name];
-    if (!Array.isArray(value) && typeof value === 'object' && !value.__variable__) {
+    if (!Array.isArray(value) && typeof value === 'object' && !valueReserved(value)) {
       argsList.push((name + ": { " + (processMethodArgs(value)) + " }"));
     } else {
       if (Array.isArray(value)) { value = "[" + (value.map(function (v) { return processValue(v); }).join(', ')) + "]"; }
-      else if (typeof value === 'object') { value = "$" + (value.__variable__); }
       else { value = processValue(value); }
       argsList.push((name + ": " + value));
     }

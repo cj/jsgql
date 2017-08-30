@@ -14,8 +14,16 @@ function jsgql ({ type, name, variables, method, fields, types, methodArgs }) {
   return gql(gqlStr)
 }
 
+const RESERVED_VALUES = ['__variable__', '__type__']
+
+function valueReserved (value) {
+  return Object.keys(value).some(key => RESERVED_VALUES.includes(key))
+}
+
 function processValue (value) {
-  return processType(value) === 'String' ? `"${value}"` : value
+  if (value.__variable__) return `$${value.__variable__}`
+  else if (value.__type__) return value.__type__
+  else return processType(value) === 'String' ? `"${value}"` : value
 }
 
 function processType (obj) {
@@ -66,11 +74,10 @@ function processMethodArgs (args) {
   for (let name in args) {
     let value = args[name]
 
-    if (!Array.isArray(value) && typeof value === 'object' && !value.__variable__) {
+    if (!Array.isArray(value) && typeof value === 'object' && !valueReserved(value)) {
       argsList.push(`${name}: { ${processMethodArgs(value)} }`)
     } else {
       if (Array.isArray(value)) value = `[${value.map(v => processValue(v)).join(', ')}]`
-      else if (typeof value === 'object') value = `$${value.__variable__}`
       else value = processValue(value)
 
       argsList.push(`${name}: ${value}`)
