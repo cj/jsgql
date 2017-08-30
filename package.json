@@ -1,0 +1,63 @@
+{
+  "name": "jsgql",
+  "version": "0.0.1",
+  "description": "Javascript to graphql-tag/gql",
+  "main": "index.js",
+  "repository": "github.com/cj/jsgql",
+  "author": "CJ Lazell",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint src/",
+    "test": "run-s lint && jest --no-cache --coverage",
+    "test:watch": "run-s lint && jest --no-cache --coverage --watchAll",
+    "rollup": "rollup -c",
+    "rollup:compress": "cross-env COMPRESS=true rollup -c",
+    "rollup:watch": "rollup -c rollup.config.babel.js -w",
+    "rollup:compress:watch": "cross-env COMPRESS=true rollup -c",
+    "build": "run-p rollup rollup:compress",
+    "build:watch": "run-p rollup:watch rollup:compress:watch",
+    "precommit": "run-s lint test build && git add dist/jsgql*"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 50,
+        "lines": 33,
+        "statements": 25
+      }
+    }
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "coveralls": "^2.13.1",
+    "cross-env": "^5.0.5",
+    "eslint": "^4.5.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jest": "^20.0.3",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "graphql": "^0.11.2",
+    "graphql-tag": "^2.4.2",
+    "husky": "^0.14.3",
+    "jest": "^20.0.4",
+    "npm-run-all": "^4.1.1",
+    "rollup": "^0.49.2",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-cleanup": "^1.0.1",
+    "rollup-plugin-commonjs": "^8.2.0",
+    "rollup-plugin-uglify": "^2.0.1"
+  },
+  "peerDependencies": {
+    "graphql": "^2.4.2"
+  }
+}
