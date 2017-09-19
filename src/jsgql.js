@@ -1,8 +1,8 @@
-'use strict'
+import gql from 'graphql-tag'
 
-const gql = require('graphql-tag')
+export { gql }
 
-function jsgql ({ type, name, variables, method, fields, types, methodArgs }) {
+export default ({ type, name, variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
 
   gqlStr = `${gqlStr}${processName(variables, types)} {
@@ -14,25 +14,25 @@ function jsgql ({ type, name, variables, method, fields, types, methodArgs }) {
   return gql(gqlStr)
 }
 
-const RESERVED_VALUES = ['__variable__', '__type__']
+const RESERVED_VALUE_KEYS = ['__variable__', '__type__']
 
-function valueReserved (value) {
-  return Object.keys(value).some(key => RESERVED_VALUES.includes(key))
+export const valueReserved = value => {
+  return Object.keys(value).some(key => RESERVED_VALUE_KEYS.includes(key))
 }
 
-function processValue (value) {
+export const processValue = value => {
   if (value.__variable__) return `$${value.__variable__}`
   else if (value.__type__) return value.__type__
   else return processType(value) === 'String' ? `"${value}"` : value
 }
 
-function processType (obj) {
+export const processType = obj => {
   let type = {}.toString.call(obj).split(' ')[1].slice(0, -1)
 
   return type === 'Number' ? 'Int' : type
 }
 
-function processName (variables, types = {}) {
+export const processName = (variables, types = {}) => {
   if (!variables) return ''
   let variablesList = []
 
@@ -48,7 +48,7 @@ function processName (variables, types = {}) {
   return `(${variablesList.join(', ')})`
 }
 
-function processMethod (variables, methodArgs) {
+export const processMethod = (variables, methodArgs) => {
   if (!variables) return methodArgs ? `(${processMethodArgs(methodArgs)})` : ''
 
   let variablesList = []
@@ -66,7 +66,7 @@ function processMethod (variables, methodArgs) {
   return methodString
 }
 
-function processMethodArgs (args) {
+export const processMethodArgs = args => {
   if (!args) return ''
 
   let argsList = []
@@ -87,7 +87,7 @@ function processMethodArgs (args) {
   return argsList.join(', ')
 }
 
-function processFields (fields) {
+export const processFields = fields => {
   if (!fields) return ''
 
   return fields.reduce((fieldsStr, field) => {
@@ -104,12 +104,3 @@ function processFields (fields) {
     return fieldsStr
   }, '')
 }
-
-exports = module.exports = jsgql
-exports.processName = processName
-exports.processMethod = processMethod
-exports.processMethodArgs = processMethodArgs
-exports.processFields = processFields
-exports.processType = processType
-exports.processValue = processValue
-exports.gql = gql

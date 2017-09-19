@@ -1,12 +1,11 @@
-const jsgql = require('./jsgql')
-const {
+import jsgql, {
   processName,
   processMethod,
   processMethodArgs,
   processFields,
   processType,
   processValue,
-} = require('./jsgql')
+} from './jsgql'
 
 const cleanGqlString = str => {
   return str.replace(/\r?\n|\r/g, '').replace(/ +(?= )/g, '')

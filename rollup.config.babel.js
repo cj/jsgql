@@ -1,12 +1,15 @@
-const buble = require('rollup-plugin-buble')
-const commonjs = require('rollup-plugin-commonjs')
-const cleanup = require('rollup-plugin-cleanup')
-const uglify = require('rollup-plugin-uglify')
+import buble       from 'rollup-plugin-buble'
+import commonjs    from 'rollup-plugin-commonjs'
+import uglify      from 'rollup-plugin-uglify'
+import cleanup     from 'rollup-plugin-cleanup'
+
 const version  = require('./package.json').version
 const compress = !!process.env.COMPRESS
 
-const plugins = [
-  buble(),
+let plugins = [
+  buble({
+    objectAssign: 'Object.assign',
+  }),
   commonjs(),
   cleanup(),
 ]
@@ -20,10 +23,10 @@ export default {
   input: 'src/jsgql',
   name: 'jsgql',
   sourcemap: true,
-  exports: 'named',
   output: {
     file: `dist/jsgql${compress ? '.min' : ''}.js`,
     format: 'umd',
+    exports: 'named',
   },
   external: ['graphql-tag'],
   globals: {
