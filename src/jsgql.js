@@ -4,7 +4,10 @@ export { gql }
 
 export default ({ type, name='', variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
-
+  
+  const filedsStr = processFields(fields)? `{
+    ${processFields(fields)}
+  }`: ''
   gqlStr = `${gqlStr}${processName(variables, types)} {
     ${method}${processMethod(variables, methodArgs)}${processFields(fields)}
   }`
@@ -88,7 +91,7 @@ export const processMethodArgs = args => {
 export const processFields = fields => {
   if (!fields) return ''
 
-  const fieldsStr = fields.reduce((fieldsStr, field) => {
+  return fields.reduce((fieldsStr, field) => {
     if (Array.isArray(field)) {
       let [key, subFields] = field
 
@@ -101,7 +104,4 @@ export const processFields = fields => {
 
     return fieldsStr
   }, '')
-  return `{
-  ${fieldsStr}
-}`
 }
