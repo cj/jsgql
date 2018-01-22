@@ -102,6 +102,6 @@ export const processFields = fields => {
     return fieldsStr
   }, '')
   return `{
-  ${fieldsStr
+  ${fieldsStr}
 }`
 }
