@@ -2,13 +2,11 @@ import gql from 'graphql-tag'
 
 export { gql }
 
-export default ({ type, name, variables, method, fields, types, methodArgs }) => {
+export default ({ type, name='', variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
 
   gqlStr = `${gqlStr}${processName(variables, types)} {
-    ${method}${processMethod(variables, methodArgs)} {
-      ${processFields(fields)}
-    }
+    ${method}${processMethod(variables, methodArgs)}${processFields(fields)}
   }`
 
   return gql(gqlStr)
@@ -90,7 +88,7 @@ export const processMethodArgs = args => {
 export const processFields = fields => {
   if (!fields) return ''
 
-  return fields.reduce((fieldsStr, field) => {
+  const fieldsStr = fields.reduce((fieldsStr, field) => {
     if (Array.isArray(field)) {
       let [key, subFields] = field
 
@@ -103,4 +101,7 @@ export const processFields = fields => {
 
     return fieldsStr
   }, '')
+  return `{
+  ${fieldsStr
+}`
 }
