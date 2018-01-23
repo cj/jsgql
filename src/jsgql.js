@@ -9,7 +9,7 @@ export default ({ type, name='', variables, method, fields, types, methodArgs })
     ${processFields(fields)}
   }`: ''
   gqlStr = `${gqlStr}${processName(variables, types)} {
-    ${method}${processMethod(variables, methodArgs)}${processFields(fields)}
+    ${method}${processMethod(variables, methodArgs)}${filedsStr}
   }`
 
   return gql(gqlStr)
