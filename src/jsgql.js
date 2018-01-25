@@ -2,6 +2,10 @@ import gql from 'graphql-tag'
 
 export { gql }
 
+export const errorMsg = {
+  noFields: 'At least one field is required.',
+}
+
 export default ({ type, name, variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
 
@@ -87,15 +91,15 @@ export const processMethodArgs = args => {
   return argsList.join(', ')
 }
 
-export const processFields = fields => {
-  if (!fields) return null
+export const processFields = (fields, root = true) => {
+  if (!fields) throw new Error(errorMsg.noFields)
 
   return fields.reduce((fieldsStr, field) => {
     if (Array.isArray(field)) {
       let [key, subFields] = field
 
       fieldsStr += ` ${key} {
-        ${processFields(subFields)}
+        ${processFields(subFields, false)}
       }`
     } else {
       fieldsStr += `${field}\n`

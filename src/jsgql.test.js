@@ -5,6 +5,7 @@ import jsgql, {
   processFields,
   processType,
   processValue,
+  errorMsg,
 } from './jsgql'
 
 const cleanGqlString = str => {
@@ -43,14 +44,14 @@ describe('jsgql', () => {
     expect(jsgql(testGql).kind).toBe('Document')
   })
 
-  test('should allow no fields', () => {
+  test('should throw error if no fields present', () => {
     const testGql = {
       type: 'query',
       name: 'test',
       method: 'testMethod',
     }
 
-    expect(jsgql(testGql).kind).toBe('Document')
+    expect(() => jsgql(testGql).kind).toThrowError(errorMsg.noFields)
   })
 
   test('processName', () => {
@@ -78,7 +79,6 @@ describe('jsgql', () => {
   })
 
   test('processFields', () => {
-    expect(processFields('')).toBe(null)
     expect(cleanGqlString(processFields([
       'id',
       ['foo', [

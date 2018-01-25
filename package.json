@@ -1,6 +1,6 @@
 {
   "name": "jsgql",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Javascript to graphql-tag/gql",
   "main": "index.js",
   "repository": "github.com/cj/jsgql",

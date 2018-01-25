@@ -1,5 +1,5 @@
 /**
- * jsgql v1.0.3
+ * jsgql v1.0.4
  * (c) 2018 CJ Lazell
  * @license MIT
  */
@@ -11,6 +11,9 @@
 
 gql = gql && gql.hasOwnProperty('default') ? gql['default'] : gql;
 
+var errorMsg = {
+  noFields: 'At least one field is required.',
+};
 var jsgql = function (ref) {
   var type = ref.type;
   var name = ref.name;
@@ -74,13 +77,14 @@ var processMethodArgs = function (args) {
   }
   return argsList.join(', ')
 };
-var processFields = function (fields) {
-  if (!fields) { return null }
+var processFields = function (fields, root) {
+  if ( root === void 0 ) root = true;
+  if (!fields) { throw new Error(errorMsg.noFields) }
   return fields.reduce(function (fieldsStr, field) {
     if (Array.isArray(field)) {
       var key = field[0];
       var subFields = field[1];
-      fieldsStr += " " + key + " {\n        " + (processFields(subFields)) + "\n      }";
+      fieldsStr += " " + key + " {\n        " + (processFields(subFields, false)) + "\n      }";
     } else {
       fieldsStr += field + "\n";
     }
@@ -89,6 +93,7 @@ var processFields = function (fields) {
 };
 
 exports.gql = gql;
+exports.errorMsg = errorMsg;
 exports['default'] = jsgql;
 exports.valueReserved = valueReserved;
 exports.processValue = processValue;
