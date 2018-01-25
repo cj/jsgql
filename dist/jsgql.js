@@ -1,5 +1,5 @@
 /**
- * jsgql v1.0.4
+ * jsgql v1.0.5
  * (c) 2018 CJ Lazell
  * @license MIT
  */
@@ -23,7 +23,8 @@ var jsgql = function (ref) {
   var types = ref.types;
   var methodArgs = ref.methodArgs;
   var gqlStr = type + " " + name;
-  gqlStr = "" + gqlStr + (processName(variables, types)) + " {\n    " + method + (processMethod(variables, methodArgs)) + " {\n      " + (processFields(fields)) + "\n    }\n  }";
+  var processedFields = fields ? ("{\n    " + (processFields(fields)) + "\n  }") : '';
+  gqlStr = "" + gqlStr + (processName(variables, types)) + " {\n    " + method + (processMethod(variables, methodArgs)) + " " + processedFields + "\n  }";
   return gql(gqlStr)
 };
 var RESERVED_VALUE_KEYS = ['__variable__', '__type__'];
@@ -79,7 +80,7 @@ var processMethodArgs = function (args) {
 };
 var processFields = function (fields, root) {
   if ( root === void 0 ) root = true;
-  if (!fields) { throw new Error(errorMsg.noFields) }
+  if (!fields) { return '' }
   return fields.reduce(function (fieldsStr, field) {
     if (Array.isArray(field)) {
       var key = field[0];

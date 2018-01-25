@@ -9,10 +9,12 @@ export const errorMsg = {
 export default ({ type, name, variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
 
+  const processedFields = fields ? `{
+    ${processFields(fields)}
+  }` : ''
+
   gqlStr = `${gqlStr}${processName(variables, types)} {
-    ${method}${processMethod(variables, methodArgs)} {
-      ${processFields(fields)}
-    }
+    ${method}${processMethod(variables, methodArgs)} ${processedFields}
   }`
 
   return gql(gqlStr)
@@ -92,7 +94,7 @@ export const processMethodArgs = args => {
 }
 
 export const processFields = (fields, root = true) => {
-  if (!fields) throw new Error(errorMsg.noFields)
+  if (!fields) return ''
 
   return fields.reduce((fieldsStr, field) => {
     if (Array.isArray(field)) {
