@@ -43,6 +43,16 @@ describe('jsgql', () => {
     expect(jsgql(testGql).kind).toBe('Document')
   })
 
+  test('should allow no fields', () => {
+    const testGql = {
+      type: 'query',
+      name: 'test',
+      method: 'testMethod',
+    }
+
+    expect(jsgql(testGql).kind).toBe('Document')
+  })
+
   test('processName', () => {
     expect(processName('')).toBe('')
     expect(processName({ foo: 'bar' })).toBe('($foo: String!)')
@@ -68,7 +78,7 @@ describe('jsgql', () => {
   })
 
   test('processFields', () => {
-    expect(processFields('')).toBe('')
+    expect(processFields('')).toBe(null)
     expect(cleanGqlString(processFields([
       'id',
       ['foo', [

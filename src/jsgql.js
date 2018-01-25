@@ -88,7 +88,7 @@ export const processMethodArgs = args => {
 }
 
 export const processFields = fields => {
-  if (!fields) return ''
+  if (!fields) return null
 
   return fields.reduce((fieldsStr, field) => {
     if (Array.isArray(field)) {

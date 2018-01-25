@@ -1,6 +1,6 @@
 /**
- * jsgql v1.0.2
- * (c) 2017 CJ Lazell
+ * jsgql v1.0.3
+ * (c) 2018 CJ Lazell
  * @license MIT
  */
 (function (global, factory) {
@@ -75,7 +75,7 @@ var processMethodArgs = function (args) {
   return argsList.join(', ')
 };
 var processFields = function (fields) {
-  if (!fields) { return '' }
+  if (!fields) { return null }
   return fields.reduce(function (fieldsStr, field) {
     if (Array.isArray(field)) {
       var key = field[0];
