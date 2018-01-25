@@ -2,13 +2,14 @@ import gql from 'graphql-tag'
 
 export { gql }
 
-export default ({ type, name, variables, method, fields, types, methodArgs }) => {
+export default ({ type, name = '', variables, method, fields, types, methodArgs }) => {
   let gqlStr = `${type} ${name}`
 
+  const filedsStr = processFields(fields) ? `{
+    ${processFields(fields)}
+  }` : ''
   gqlStr = `${gqlStr}${processName(variables, types)} {
-    ${method}${processMethod(variables, methodArgs)} {
-      ${processFields(fields)}
-    }
+    ${method}${processMethod(variables, methodArgs)}${filedsStr}
   }`
 
   return gql(gqlStr)
